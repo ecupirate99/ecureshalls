@@ -1,0 +1,5 @@
+{
+  "name": "ECU Residence Hall AI Chatbot",
+  "description": "An AI-powered chatbot to help students with information about ECU residence halls and neighborhoods.",
+  "requestFramePermissions": []
+}
