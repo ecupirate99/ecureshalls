@@ -177,8 +177,8 @@ export default function App() {
       {/* Footer */}
       <footer className="bg-gray-100 border-t border-gray-200 py-8 px-4 text-center mt-auto">
         <div className="max-w-4xl mx-auto">
-          <p className="text-sm text-gray-600 mb-2 font-medium">East Carolina University Housing & Residence Life</p>
-          <p className="text-xs text-gray-400">© {new Date().getFullYear()} East Carolina University. All rights reserved.</p>
+          <p className="text-sm text-gray-600 mb-2 font-medium">ECU Housing & Residence Life</p>
+          <p className="text-xs text-gray-400">© {new Date().getFullYear()} Created by Quintin G.- All rights reserved.</p>
         </div>
       </footer>
     </div>
