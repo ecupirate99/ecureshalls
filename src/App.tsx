@@ -6,7 +6,6 @@
 import { useState } from 'react';
 import { Send, User, Bot, Loader2, Trash2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Client } from "@gradio/client";
 
 export default function App() {
   const [question, setQuestion] = useState('');
@@ -28,22 +27,17 @@ export default function App() {
     setAnswer('');
 
     try {
-      const client = await Client.connect("ecupirate99/ecuresidencerag");
-      
-      // Prepend a system instruction to tailor the response for a college-age audience
-      const systemInstruction = "As an ECU Housing assistant talking to a college student, please answer this question in a helpful, relatable, and friendly tone: ";
-      const result = await client.predict(0, [systemInstruction + question]) as any;
-      
-      // result.data is an array of outputs
-      if (result && result.data && Array.isArray(result.data)) {
-        const output = result.data[0];
-        setAnswer(typeof output === 'string' ? output : JSON.stringify(output, null, 2));
-      } else {
-        throw new Error("Unexpected response format from HF Space");
-      }
+      const resp = await fetch('/api/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: question })
+      });
+      const data = await resp.json();
+      const output = data?.data?.[0];
+      setAnswer(typeof output === 'string' ? output : JSON.stringify(output, null, 2));
     } catch (err) {
-      console.error("Error calling HF Space API:", err);
-      setError("Sorry, there was an error fetching the answer. Please try again.");
+      console.error('Error calling proxy API:', err);
+      setError('Sorry, there was an error fetching the answer. Please try again.');
     } finally {
       setIsLoading(false);
     }
