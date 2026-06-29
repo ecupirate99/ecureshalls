@@ -1,26 +1,40 @@
 export default async function handler(req, res) {
-  if (req.method === "POST") {
-    try {
-      // Handle both raw string and already-parsed JSON
-      const body =
-        typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-      res.status(200).json({
-        answer: `You asked: ${body.prompt}`,
-        prompt: body.prompt,
-        success: true
-      });
-    } catch (err) {
-      console.error("API ERROR:", err);
-      res.status(500).json({ success: false, error: err.message });
+  if (req.method === "OPTIONS") return res.status(204).end();
+  if (req.method !== "POST") return res.status(405).json({ error: "Method Not Allowed" });
+
+  try {
+    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
+    const { prompt } = body;
+    if (!prompt) return res.status(400).json({ error: "Missing prompt" });
+
+    const systemInstruction = "As an ECU Housing assistant talking to a college student, please answer this question in a helpful, relatable, and friendly tone: ";
+
+    const hfRes = await fetch(
+      "https://ecupirate99-ecuresidencerag.hf.space/api/predict/",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ data: [systemInstruction + prompt] }),
+        signal: AbortSignal.timeout(25000),
+      }
+    );
+
+    if (!hfRes.ok) {
+      const text = await hfRes.text();
+      console.error("HuggingFace error:", hfRes.status, text);
+      return res.status(502).json({ error: "Upstream error", detail: text });
     }
-    return;
-  }
 
-  if (req.method === "GET") {
-    res.status(200).json({ message: "GET is working" });
-    return;
-  }
+    const data = await hfRes.json();
+    console.log("HF response:", JSON.stringify(data));
+    return res.status(200).json(data);
 
-  res.status(405).json({ error: "Method Not Allowed" });
+  } catch (err) {
+    console.error("Proxy error:", err.name, err.message);
+    return res.status(500).json({ error: err.name, message: err.message });
+  }
 }
