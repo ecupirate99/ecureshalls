@@ -33,7 +33,8 @@ export default function App() {
         body: JSON.stringify({ prompt: question })
       });
       const data = await resp.json();
-      const output = data?.data?.[0];
+      //const output = data?.data?.[0];
+      const output = data?.data?.[0] ?? data?.answer;
       setAnswer(typeof output === 'string' ? output : JSON.stringify(output, null, 2));
     } catch (err) {
       console.error('Error calling proxy API:', err);
