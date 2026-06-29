@@ -3,11 +3,10 @@ export default async function handler(req, res) {
     try {
       const body = req.body;
 
-      // Your AI or proxy logic goes here
       res.status(200).json({
         success: true,
-        message: "POST request received",
-        prompt: body.prompt
+        prompt: body.prompt,
+        message: "POST request received"
       });
     } catch (err) {
       console.error("API ERROR:", err);
