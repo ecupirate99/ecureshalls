@@ -16,7 +16,7 @@ export default async function handler(req, res) {
     const HF_BASE = "https://ecupirate99-ecuresidencerag.hf.space";
 
     // Step 1: POST to get event_id
-    const postRes = await fetch(`${HF_BASE}/gradio_api/call/predict`, {
+    const postRes = await fetch(`${HF_BASE}/gradio_api/call/ask_question`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ data: [fullPrompt] }),
@@ -33,7 +33,7 @@ export default async function handler(req, res) {
     console.log("HF event_id:", event_id);
 
     // Step 2: GET the result stream using event_id
-    const getRes = await fetch(`${HF_BASE}/gradio_api/call/predict/${event_id}`, {
+    const getRes = await fetch(`${HF_BASE}/gradio_api/call/ask_question/${event_id}`, {
       signal: AbortSignal.timeout(25000),
     });
 
